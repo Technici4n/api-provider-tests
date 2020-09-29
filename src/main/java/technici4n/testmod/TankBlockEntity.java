@@ -139,7 +139,7 @@ public class TankBlockEntity extends BlockEntity implements BlockEntityClientSer
         if(!world.isClient) {
             // Try to move down 1 bucket of fluid per second.
             try {
-                FluidInsertable target = ApiAccesses.FLUID_INSERTABLE_BLOCK_ACCESS.getProviderFromBlockEntity(world.getBlockEntity(pos.offset(Direction.DOWN))).getFluidInsertable(Direction.UP);
+                FluidInsertable target = ApiAccesses.FLUID_INSERTABLE_BLOCK_ACCESS.getProviderFromBlock(world, pos.offset(Direction.DOWN)).getFluidInsertable(Direction.UP);
                 FluidVolumeUtil.move(this, target, FluidAmount.of(1, 20));
             } catch(NullPointerException npe) {
                 // TODO: fix NPE in BlockApiProviderAccessImpl#getProviderFromBlockEntity
