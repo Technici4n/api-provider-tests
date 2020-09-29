@@ -31,17 +31,6 @@ public class TestMod implements ModInitializer {
 		TANK_BLOCK_ENTITY_TYPE = BlockEntityType.Builder.create(TankBlockEntity::new, TANK_BLOCK).build(null);
 		Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier("testmod:tank"), TANK_BLOCK_ENTITY_TYPE);
 
-		/*
-		 * PROVIDER-API
-		 * Exposing FluidInsertable for the TankBlockEntity (it implements FluidInsertable).
-		 */
-		ApiAccesses.FLUID_INSERTABLE_BLOCK_ACCESS.registerProviderForBlockEntity(be -> new FluidInsertableProvider() {
-			@Override
-			public FluidInsertable getFluidInsertable(Direction side) {
-				return side == Direction.UP && be instanceof TankBlockEntity ? (TankBlockEntity) be : getApi();
-			}
-		}, TANK_BLOCK_ENTITY_TYPE);
-
 		System.out.println("TestMod setup ok!");
 	}
 }

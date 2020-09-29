@@ -1,5 +1,8 @@
 package technici4n.testmod;
 
+import alexiil.mc.lib.attributes.AttributeList;
+import alexiil.mc.lib.attributes.AttributeProviderBlockEntity;
+import alexiil.mc.lib.attributes.SearchOptions;
 import alexiil.mc.lib.attributes.Simulation;
 import alexiil.mc.lib.attributes.fluid.*;
 import alexiil.mc.lib.attributes.fluid.amount.FluidAmount;
@@ -21,7 +24,7 @@ import technici4n.testmod.mixin.ClientWorldMixin;
 
 import java.math.RoundingMode;
 
-public class TankBlockEntity extends BlockEntity implements BlockEntityClientSerializable, RenderAttachmentBlockEntity, FluidTransferable, Tickable {
+public class TankBlockEntity extends BlockEntity implements BlockEntityClientSerializable, RenderAttachmentBlockEntity, FluidTransferable, Tickable, AttributeProviderBlockEntity {
     private FluidKey fluid = FluidKeys.EMPTY;
     private int amount = 0;
     private int capacity = 10000;
@@ -138,12 +141,15 @@ public class TankBlockEntity extends BlockEntity implements BlockEntityClientSer
     public void tick() {
         if(!world.isClient) {
             // Try to move down 1 bucket of fluid per second.
-            try {
-                FluidInsertable target = ApiAccesses.FLUID_INSERTABLE_BLOCK_ACCESS.getProviderFromBlock(world, pos.offset(Direction.DOWN)).getFluidInsertable(Direction.UP);
-                FluidVolumeUtil.move(this, target, FluidAmount.of(1, 20));
-            } catch(NullPointerException npe) {
-                // TODO: fix NPE in BlockApiProviderAccessImpl#getProviderFromBlockEntity
-            }
+            FluidInsertable target = FluidAttributes.INSERTABLE.get(world, pos.offset(Direction.DOWN), SearchOptions.inDirection(Direction.DOWN));
+            FluidVolumeUtil.move(this, target, FluidAmount.of(1, 20));
+        }
+    }
+
+    @Override
+    public void addAllAttributes(AttributeList<?> to) {
+        if(to.getTargetSide() == Direction.UP) { // this also offers FluidExtractable
+            to.offer(this);
         }
     }
 }
